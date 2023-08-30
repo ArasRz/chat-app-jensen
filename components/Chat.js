@@ -1,11 +1,10 @@
 import React from 'react'
 import { View, Text, Button } from 'react-native'
 
-const Chat = ({ navigation }) => {
+const Chat = () => {
   return (
     <View>
-      <Text>Chat PAge</Text>
-      <Button title="Login" onPress={() => navigation.navigate('Register')} />
+      <Text>Chat Page</Text>
 
     </View>
   )

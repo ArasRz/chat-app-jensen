@@ -24,11 +24,11 @@ const Login = ({ navigation }) => {
 
       if (response.ok) {
         const { accessToken, _id } = data.data;
-        console.log(accessToken);
+        console.log(accessToken + _id);
         await AsyncStorage.setItem('accessToken', accessToken);
         await AsyncStorage.setItem('_id', _id);
 
-        navigation.navigate('Chat');
+        navigation.navigate('AuthenticatedScreens');
       } else {
         setError('Incorrect user information');
       }
