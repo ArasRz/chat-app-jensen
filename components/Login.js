@@ -23,10 +23,10 @@ const Login = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
-        const { accessToken, userID } = data;
-
+        const { accessToken, _id } = data.data;
+        console.log(accessToken);
         await AsyncStorage.setItem('accessToken', accessToken);
-        await AsyncStorage.setItem('userID', userID);
+        await AsyncStorage.setItem('_id', _id);
 
         navigation.navigate('Chat');
       } else {

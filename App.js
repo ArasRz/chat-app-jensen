@@ -17,6 +17,7 @@ const App = () => {
   }, []);
 
   const checkAuthentication = async () => {
+    console.log(accessToken)
     const accessToken = await AsyncStorage.getItem('accessToken');
     setIsAuthenticated(accessToken !== null);
   };
