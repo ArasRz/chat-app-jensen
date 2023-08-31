@@ -6,41 +6,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Login from './components/Login';
 import AuthenticatedScreens from './components/navigators/AppNavigator';
 import Register from './components/Register';
+import Context from './components/contexts/Context';
+import { RootNavigator } from './components/navigators/RootNavigator';
+
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    checkAuthentication();
-  }, []);
-
-  const checkAuthentication = async () => {
-    const accessToken = await AsyncStorage.getItem('accessToken');
-    console.log(accessToken);
-    if(accessToken===null){
-    setIsAuthenticated(false);
-    }else{
-      setIsAuthenticated(true)
-    }
-  };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {isAuthenticated ? (
-          <>
-            <Stack.Screen name="AuthenticatedScreens" component={AuthenticatedScreens} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Register" component={Register} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    
+      <Context>
+        <RootNavigator/>
+      </Context>
+    
   );
 };
 
