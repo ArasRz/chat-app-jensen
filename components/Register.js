@@ -21,10 +21,11 @@ const Register = ({ navigation }) => {
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (data.status===200) {
         navigation.navigate('Login');
       } else {
-        setError(data.error || 'Registration failed');
+        console.log(data)
+        setError(data.message);
       }
     } catch (error) {
       console.error('Error during registration:', error);

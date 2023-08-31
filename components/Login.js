@@ -1,42 +1,56 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContext } from 'react';
+import { AuthContext } from './contexts/Context';
 
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  // const [error, setError] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch('https://chat-api-with-auth.up.railway.app/auth/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
+  const {handleLogin} = useContext(AuthContext);
+  const {error} = useContext(AuthContext);
+  const {accessToken}= useContext(AuthContext);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        const { accessToken, _id } = data.data;
-        console.log(accessToken + _id);
-        await AsyncStorage.setItem('accessToken', accessToken);
-        await AsyncStorage.setItem('_id', _id);
-
-        navigation.navigate('AuthenticatedScreens');
-      } else {
-        setError('Incorrect user information');
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
-      setError('An error occurred during login.');
+  const navigateToChat = () => {
+    if(accessToken !== null){
+    navigation.navigate('AuthenticatedScreens');
+    } else{
+      null;
     }
-  };
+  }
+
+  // const handleLogin = async () => {
+  //   try {
+  //     const response = await fetch('https://chat-api-with-auth.up.railway.app/auth/token', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         username,
+  //         password,
+  //       }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (response.ok) {
+  //       const { accessToken, _id } = data.data;
+  //       console.log(accessToken + _id);
+  //       await AsyncStorage.setItem('accessToken', accessToken);
+  //       await AsyncStorage.setItem('_id', _id);
+
+  //       navigation.navigate('AuthenticatedScreens');
+  //     } else {
+  //       setError('Incorrect user information');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error during login:', error);
+  //     setError('An error occurred during login.');
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
@@ -54,7 +68,7 @@ const Login = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <Button title="Login" onPress={() => {handleLogin(username, password); navigateToChat()}} />
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.registerLink}>Don't have an account? Register here.</Text>
