@@ -5,13 +5,15 @@ import { useContext } from 'react';
 import { AuthContext } from './contexts/Context';
 
 const Login = ({ navigation }) => {
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   // const [error, setError] = useState('');
 
   const {handleLogin} = useContext(AuthContext);
   const {error} = useContext(AuthContext);
   const {accessToken}= useContext(AuthContext);
+  const {myUsername} = useContext(AuthContext);
+  const {setMyusername} = useContext(AuthContext);
+  
 
   const navigateToChat = () => {
     if(accessToken !== null){
@@ -58,8 +60,8 @@ const Login = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        value={myUsername}
+        onChangeText={setMyusername}
       />
       <TextInput
         style={styles.input}
@@ -68,7 +70,7 @@ const Login = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={() => {handleLogin(username, password); navigateToChat()}} />
+      <Button title="Login" onPress={() => {handleLogin(myUsername, password); navigateToChat()}} />
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.registerLink}>Don't have an account? Register here.</Text>
