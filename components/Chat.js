@@ -12,6 +12,7 @@ const Chat = () => {
   const{myUsername} = useContext(AuthContext);
 
   const fetchMessages = async() => {
+    console.log('messages fetched');
     try{
       const response = await fetch('https://chat-api-with-auth.up.railway.app/messages',{
       headers: {
@@ -33,14 +34,35 @@ const Chat = () => {
   //   console.log(userid)
   // }, [messages]);
 
-  const Item = ({ content, date, username }) => {
-    console.log('Item Rendered:', username + date); // Log the user object
+  const deleteMessage = async(messageID) => {
+    try {
+      const response = await fetch(`https://chat-api-with-auth.up.railway.app/messages/${messageID}`, {
+        method: 'DELETE',
+        headers: {
+          'User-Agent': 'Insomnia/2023.5.6',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (response.status===200) {
+        console.log('Message deleted')
+      } else {
+        console.log(response)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const Item = ({ content, date, username, messageID }) => {
+    // console.log('Item Rendered:', username + date + messageID); // Log the user object
     if(username !== null){
     return (
       <View style={username !== myUsername ? styles.itemOther : styles.itemUser}>
         <Text>{username}</Text>
         <Text style={styles.messageText}>{content}</Text>
         <Text style={styles.messageDate}>{date}</Text>
+        {username === myUsername ? <Button title='Hi' onPress={()=>deleteMessage(messageID)}/>  :  null}
       </View>
     )} else{
       return null;
@@ -49,11 +71,10 @@ const Chat = () => {
 
   const handleInputChange = (text) =>{
     setNewMessage(text);
-    console.log(newMessage + accessToken);
   };
 
   const handleSubmitMessage = async () => {
-    fetchMessages();
+    await fetchMessages();
     try {
       const response = await fetch('https://chat-api-with-auth.up.railway.app/messages', {
         method: 'POST',
@@ -67,14 +88,13 @@ const Chat = () => {
         }),
       });
 
-
       if (response.status===201) {
-        console.log('created')
+        console.log('Message sent')
       } else {
         console.log(response)
       }
     } catch (error) {
-      console.error('Error during registration:', error);
+      console.error(error);
     }
   }; 
 
@@ -86,7 +106,7 @@ const Chat = () => {
       }) : null} */}
       <FlatList
         data={messages}
-        renderItem={({item}) => <Item content={item.content} date={item.date} username={item.user ? item.user.username : null}/>}
+        renderItem={({item}) => <Item content={item.content} date={item.date} username={item.user ? item.user.username : null} messageID={item._id}/>}
         keyExtractor={item => item._id}
       />
       <View style={styles.inputContainer}>
@@ -125,10 +145,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   messageText: {
-    fontSize: 32,
+    fontSize: 16,
   },
   messageDate: {
-    fontSize: 16
+    fontSize: 12
   },
   messageUsername: {
     fontSize: 20
