@@ -6,7 +6,6 @@ import { AuthContext } from './contexts/Context';
 
 const Login = ({ navigation }) => {
   const [password, setPassword] = useState('');
-  // const [error, setError] = useState('');
 
   const {handleLogin} = useContext(AuthContext);
   const {error} = useContext(AuthContext);
@@ -22,37 +21,6 @@ const Login = ({ navigation }) => {
       null;
     }
   }
-
-  // const handleLogin = async () => {
-  //   try {
-  //     const response = await fetch('https://chat-api-with-auth.up.railway.app/auth/token', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         username,
-  //         password,
-  //       }),
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (response.ok) {
-  //       const { accessToken, _id } = data.data;
-  //       console.log(accessToken + _id);
-  //       await AsyncStorage.setItem('accessToken', accessToken);
-  //       await AsyncStorage.setItem('_id', _id);
-
-  //       navigation.navigate('AuthenticatedScreens');
-  //     } else {
-  //       setError('Incorrect user information');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error during login:', error);
-  //     setError('An error occurred during login.');
-  //   }
-  // };
 
   return (
     <View style={styles.container}>
