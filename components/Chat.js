@@ -3,13 +3,14 @@ import { View, Text, Button, StyleSheet, TextInput, TouchableOpacity } from 'rea
 import { useContext } from 'react';
 import { AuthContext } from './contexts/Context';
 import { FlatList } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
 
   const {accessToken}= useContext(AuthContext);
-  const{myUsername} = useContext(AuthContext);
+  const {myUsername} = useContext(AuthContext);
 
   const fetchMessages = async() => {
     console.log('messages fetched');
@@ -21,7 +22,6 @@ const Chat = () => {
       }})
       const data = await response.json();
       setMessages(data.data);
-      // console.log(messages);
     } catch(error){
       console.log(error)
     }
@@ -29,11 +29,8 @@ const Chat = () => {
 
   useEffect(() => {fetchMessages()
   }, [])
-  // useEffect(() => {
-  //   console.log('Updated messages:', messages); // Log the updated state
-  //   console.log(userid)
-  // }, [messages]);
 
+  //Delete message
   const deleteMessage = async(messageID) => {
     try {
       const response = await fetch(`https://chat-api-with-auth.up.railway.app/messages/${messageID}`, {
@@ -45,7 +42,8 @@ const Chat = () => {
       });
 
       if (response.status===200) {
-        console.log('Message deleted')
+        console.log('Message deleted');
+        await fetchMessages();
       } else {
         console.log(response)
       }
@@ -54,27 +52,33 @@ const Chat = () => {
     }
   }
 
+  //Render messages
   const Item = ({ content, date, username, messageID }) => {
-    // console.log('Item Rendered:', username + date + messageID); // Log the user object
+    const formattedDate = date.replace("T", " ").slice(0, -5);
+    const messageTime = `${formattedDate}`;
+
     if(username !== null){
     return (
       <View style={username !== myUsername ? styles.itemOther : styles.itemUser}>
-        <Text>{username}</Text>
+        <Text style={styles.messageUsername}>{username}</Text>
         <Text style={styles.messageText}>{content}</Text>
-        <Text style={styles.messageDate}>{date}</Text>
-        {username === myUsername ? <Button title='Hi' onPress={()=>deleteMessage(messageID)}/>  :  null}
+        <Text style={styles.messageDate}>{messageTime}</Text>    
+        {username === myUsername ? <TouchableOpacity onPress={() => deleteMessage(messageID)}>
+          <Icon name="times" size={20} color="red" />
+        </TouchableOpacity>  :  null}
       </View>
     )} else{
       return null;
     }
   };
 
+  //Input
   const handleInputChange = (text) =>{
     setNewMessage(text);
   };
 
+  //Create message
   const handleSubmitMessage = async () => {
-    await fetchMessages();
     try {
       const response = await fetch('https://chat-api-with-auth.up.railway.app/messages', {
         method: 'POST',
@@ -89,7 +93,8 @@ const Chat = () => {
       });
 
       if (response.status===201) {
-        console.log('Message sent')
+        console.log('Message sent');
+        await fetchMessages();
       } else {
         console.log(response)
       }
@@ -101,9 +106,6 @@ const Chat = () => {
   return (
     <View style={styles.container}>
       <Text>Chat Page</Text>
-      {/* {messages.length > 0 ? messages.map(message => {
-        return <Text>{message.content}</Text>
-      }) : null} */}
       <FlatList
         data={messages}
         renderItem={({item}) => <Item content={item.content} date={item.date} username={item.user ? item.user.username : null} messageID={item._id}/>}
@@ -132,17 +134,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9c2ff',
     borderColor: 'black',
     borderWidth: 1,
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    padding: 10,
+    marginVertical: 2,
+    marginHorizontal: 2,
+    borderRadius: 15,
+    alignSelf: 'flex-end',
   },
   itemOther: {
-    backgroundColor: 'green',
+    backgroundColor: '#d3f9c2',
     borderColor: 'black',
     borderWidth: 1,
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    padding: 10,
+    marginVertical: 2,
+    marginHorizontal: 2,
+    borderRadius: 15,
+    alignSelf: 'flex-start',
   },
   messageText: {
     fontSize: 16,
@@ -151,7 +157,8 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
   messageUsername: {
-    fontSize: 20
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   inputContainer: {
     flexDirection: 'row',

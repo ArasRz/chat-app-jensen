@@ -41,6 +41,9 @@ export default function Context({children, navigation}) {
             }
         } catch (error) {
             console.error('Error during login:', error);
+            if (error instanceof TypeError) {
+                console.error('Network request failed. Check internet connection.');
+              }
         }
     };
 
